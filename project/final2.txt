@@ -1,0 +1,86 @@
+```python
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import SGDClassifier
+
+# Load data
+data = pd.read_csv('Churn_Modelling.csv').dropna()
+
+# Encoding categorical variables
+gender_mapping = {'Male': 1, 'Female': 0}
+data['Gender'] = data['Gender'].map(gender_mapping)
+
+label_encoder = LabelEncoder()
+data['Geography'] = label_encoder.fit_transform(data['Geography'])
+
+# Feature Scaling
+scaler = StandardScaler()
+numerical_cols = ['CreditScore', 'Age', 'Balance', 'EstimatedSalary']
+data[numerical_cols] = scaler.fit_transform(data[numerical_cols])
+
+# Splitting the dataset into train and test sets
+X = data.drop(['Exited', 'Surname'], axis=1)
+y = data['Exited']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Decision Tree model
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy1 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (Decision Tree): {accuracy1:.2f}")
+print("Classification Report (Decision Tree):")
+print(classification_report(y_test, y_pred))
+
+# SVM model
+model = SVC(kernel='rbf', C=1.0, gamma='scale')
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy2 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (SVM): {accuracy2:.2f}")
+print("Classification Report (SVM):")
+print(classification_report(y_test, y_pred))
+
+# Random Forest Classifier model
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
+y_pred = rf_model.predict(X_test)
+accuracy3 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (Random Forest): {accuracy3:.2f}")
+print("Classification Report (Random Forest):")
+print(classification_report(y_test, y_pred))
+
+# XGBClassifier model
+model = XGBClassifier()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy4 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (XGBoost): {accuracy4:.2f}")
+print("Classification Report (XGBoost):")
+print(classification_report(y_test, y_pred))
+
+# K-Nearest Neighbours model
+model = KNeighborsClassifier(n_neighbors=5)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy5 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (K-Nearest Neighbours): {accuracy5:.2f}")
+print("Classification Report (K-Nearest Neighbours):")
+print(classification_report(y_test, y_pred))
+
+# Stochastic Gradient Descent model
+model = SGDClassifier(max_iter=1000, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy6 = accuracy_score(y_test, y_pred)
+print(f"Accuracy (SGD): {accuracy6:.2f}")
+print("Classification Report (SGD):")
+print(classification_report(y_test, y_pred))
+```

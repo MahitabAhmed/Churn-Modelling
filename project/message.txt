@@ -1,0 +1,60 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load data
+data = pd.read_csv('Churn_Modelling.csv')
+
+# Drop nulls
+data = data.dropna()
+
+# Fill missing values
+data['Age'].fillna(data['Age'].median(), inplace=True)
+
+# Encoding Categorical Variables
+gender_mapping = {'Male': 1, 'Female': 0}
+data['Gender'] = data['Gender'].map(gender_mapping)
+
+selected_features = ['CreditScore', 'Age', 'Balance', 'NumOfProducts']
+X = data[selected_features]
+y = data['Exited']
+
+# Feature Scaling
+scaler = StandardScaler()
+numerical_cols = ['CreditScore', 'Age', 'Balance', 'EstimatedSalary']
+X[numerical_cols] = scaler.fit_transform(X[numerical_cols])
+
+# Splitting the dataset into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize the Random Forest Classifier and Logistic Regression
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+logistic_regression = LogisticRegression(max_iter=1000)
+
+# Train the classifiers
+rf_classifier.fit(X_train, y_train)
+logistic_regression.fit(X_train, y_train)
+
+# Predict on the test set
+predictions = rf_classifier.predict(X_test)
+predictions2 = logistic_regression.predict(X_test)
+
+# Evaluate the models
+accuracy = accuracy_score(y_test, predictions)
+print(f"Random Forest Accuracy: {accuracy:.2f}")
+
+accuracy2 = accuracy_score(y_test, predictions2)
+print(f"Logistic Regression Accuracy: {accuracy2:.2f}")
+
+# Print classification report and confusion matrix
+print("\nRandom Forest Classification Report:")
+print(classification_report(y_test, predictions))
+
+print("\nLogistic Regression Classification Report:")
+print(classification_report(y_test, predictions2))
+
+print("\nRandom Forest Confusion Matrix:")
+print(confusion_matrix(y_test, predictions))
